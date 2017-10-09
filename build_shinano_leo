@@ -1,0 +1,33 @@
+export KBUILD_BUILD_USER=GreyLeshy
+export KBUILD_BUILD_HOST=BuildHost
+
+export ARCH=arm
+
+### GCC 4.9 / Google Toolchain
+export PATH=/media/greyleshy/kernel/android/Xperia_Z3/prebuilts/arm-linux-androideabi-4.9/bin/:$PATH
+export CROSS_COMPILE=arm-linux-androideabi-
+
+make shinano_leo_defconfig O=./out
+make O=./out
+
+
+echo "checking for compiled kernel..."
+if [ -f out/arch/arm/boot/zImage-dtb ]
+then
+
+	echo "Done"
+
+	### Xperia Z3
+	### Enforcing build
+	../mkbootimg \
+	 --kernel out/arch/arm/boot/zImage-dtb \
+	 --ramdisk ../ramdisk_shinano_leo_23.5.A.1.291.cpio.gz \
+	 --cmdline "console=ttyHSL0,115200,n8 androidboot.hardware=qcom user_debug=23 msm_rtb.filter=0x3b7 ehci-hcd.park=3 androidboot.bootdevice=msm_sdcc.1 vmalloc=300M dwc3.maximum_speed=high dwc3_msm.prop_chg_detect=Y" \
+	 --base 0x00000000 \
+	 --pagesize 2048 \
+	 --dt ../dt.img \
+	 --ramdisk_offset 0x02000000 \
+	 --tags_offset 0x01E00000 \
+	 --output ../boot.img
+
+fi
